@@ -9,7 +9,7 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text>Welcome to my movie Recommendation app </Text>
+      <Text>Welcome!! </Text>
     </View>
   );
 }
