@@ -3,6 +3,7 @@ import SearchBar from "@/components/SearchBar";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
 import { fetchMovies } from "@/services/api";
+import { updateSearchCount } from "@/services/appwrite";
 import useFetch from "@/services/useFetch";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
@@ -26,6 +27,11 @@ const useDebounce = (value: string, delay: number) => {
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchTracked, setSearchTracked] = useState<string>("");
+  const [trackingStatus, setTrackingStatus] = useState<{
+    action?: "created" | "updated";
+    count?: number;
+  }>({});
 
   // Debounce the search query with 500ms delay
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
@@ -45,11 +51,58 @@ const Search = () => {
         await loadMovies();
       } else {
         reset();
+        setSearchTracked(""); // Reset tracking when search is cleared
+        setTrackingStatus({}); // Reset tracking status
       }
     };
 
     performSearch();
-  }, [debouncedSearchQuery]); // Remove loadMovies and reset from dependencies
+  }, [debouncedSearchQuery]);
+
+  // Separate effect to track search counts after movies are loaded
+  useEffect(() => {
+    const trackSearch = async () => {
+      // Only track if:
+      // 1. Not currently loading
+      // 2. No errors
+      // 3. There's a search query
+      // 4. We haven't already tracked this exact query
+      // 5. We have movies to track with
+      if (
+        !loading &&
+        !error &&
+        debouncedSearchQuery.trim() &&
+        searchTracked !== debouncedSearchQuery &&
+        movies?.length > 0 &&
+        movies[0]
+      ) {
+        try {
+          console.log(`🔍 Tracking search: "${debouncedSearchQuery}"`);
+
+          const result = await updateSearchCount(
+            debouncedSearchQuery,
+            movies[0]
+          );
+
+          if (result.success) {
+            setSearchTracked(debouncedSearchQuery); // Mark as tracked
+            setTrackingStatus({
+              action: result.action,
+              count: result.newCount,
+            });
+          } else {
+            console.warn(`Search tracking failed:`, result.error);
+            setTrackingStatus({});
+          }
+        } catch (err) {
+          console.error(`Search tracking error:`, err);
+          setTrackingStatus({});
+        }
+      }
+    };
+
+    trackSearch();
+  }, [movies, loading, error, debouncedSearchQuery, searchTracked]);
 
   // Show loading indicator when user is typing (before debounce completes)
   const isTyping = searchQuery !== debouncedSearchQuery && searchQuery.trim();
@@ -116,10 +169,21 @@ const Search = () => {
               !error &&
               debouncedSearchQuery.trim() &&
               movies?.length > 0 && (
-                <Text className="text-xl text-white font-bold px-5 mb-3">
-                  Search Results for{" "}
-                  <Text className="text-accent">{debouncedSearchQuery}</Text>
-                </Text>
+                <View className="px-5 mb-3">
+                  <Text className="text-xl text-white font-bold">
+                    Search Results for{" "}
+                    <Text className="text-accent">{debouncedSearchQuery}</Text>
+                  </Text>
+                  {searchTracked === debouncedSearchQuery &&
+                    trackingStatus.action && (
+                      <Text className="text-xs text-green-400 mt-1">
+                        ✓ Search{" "}
+                        {trackingStatus.action === "updated"
+                          ? `tracked (${trackingStatus.count} times)`
+                          : "tracked for first time"}
+                      </Text>
+                    )}
+                </View>
               )}
           </>
         }
@@ -129,7 +193,7 @@ const Search = () => {
               <Text className="text-center text-gray-500">
                 {debouncedSearchQuery.trim()
                   ? "No movies found"
-                  : "Search for a movie..."}
+                  : "Search for a movie to get started..."}
               </Text>
             </View>
           ) : null
