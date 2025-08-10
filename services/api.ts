@@ -1,3 +1,28 @@
+export interface MovieDetails {
+  id: number;
+  title: string;
+  overview: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  release_date: string;
+  runtime: number | null;
+  vote_average: number;
+  vote_count: number;
+  genres: {
+    id: number;
+    name: string;
+  }[];
+  tagline: string | null;
+  status: string;
+  budget: number;
+  revenue: number;
+  production_companies: {
+    id: number;
+    name: string;
+    logo_path: string | null;
+  }[];
+}
+
 export const TMDB_CONFIG = {
   BASE_URL: "https://api.themoviedb.org/3",
   API_KEY: process.env.EXPO_PUBLIC_MOVIE_API_KEY,
@@ -25,6 +50,30 @@ export const fetchMovies = async ({ query }: { query: string }) => {
   const data = await response.json();
 
   return data.results;
+};
+
+export const fetchMovieDetails = async (
+  movieId: string
+): Promise<MovieDetails> => {
+  try {
+    const response = await fetch(
+      `${TMDB_CONFIG.BASE_URL}/movie/${movieId}?language=en-US`,
+      {
+        method: "GET",
+        headers: TMDB_CONFIG.headers,
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch movie details: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching movie details:", error);
+    throw error;
+  }
 };
 
 /*const url =
