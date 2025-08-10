@@ -88,7 +88,9 @@ export default function Index() {
                 <TrendingCard movie={item} index={index} />
               )}
               keyExtractor={(item, index) =>
-                `trending-${index}-${item.movie_id || item.id || Math.random()}`
+                `trending-${index}-${
+                  item.movie_id || item.movie_id || Math.random()
+                }`
               }
               ItemSeparatorComponent={() => <View className="w-4" />}
             />

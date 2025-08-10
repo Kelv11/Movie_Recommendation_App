@@ -235,7 +235,7 @@ const MovieDetails = () => {
             {movie.tagline && (
               <View className="mb-6">
                 <Text className="text-orange-400 text-center italic text-lg font-medium">
-                  "{movie.tagline}"
+                  {"${movie.tagline}"}
                 </Text>
               </View>
             )}
