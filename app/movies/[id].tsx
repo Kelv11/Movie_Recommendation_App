@@ -1,3 +1,4 @@
+import SaveButton from "@/components/SaveButton";
 import { fetchMovieDetails } from "@/services/api";
 import useFetch from "@/services/useFetch";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -106,7 +107,7 @@ const MovieDetails = () => {
 
             {/* Safe Area for Status Bar */}
             <SafeAreaView>
-              {/* Header with Back Button */}
+              {/* Header with Back Button and Save Button */}
               <View className="flex-row items-center justify-between px-5 pt-4 pb-4">
                 <TouchableOpacity
                   onPress={() => router.back()}
@@ -125,7 +126,18 @@ const MovieDetails = () => {
                   Movie Details
                 </Text>
 
-                <View className="w-10" />
+                {/* Save Button */}
+                <SaveButton
+                  movie={{
+                    movie_id: String(movie.id),
+                    title: movie.title,
+                    poster_url: movie.poster_path
+                      ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                      : "https://via.placeholder.com/500x750?text=No+Image",
+                  }}
+                  size={24}
+                  className="bg-black/60 backdrop-blur-sm"
+                />
               </View>
             </SafeAreaView>
 
