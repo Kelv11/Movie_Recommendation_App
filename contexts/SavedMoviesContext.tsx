@@ -1,5 +1,12 @@
 // contexts/SavedMoviesContext.tsx
-import React, { createContext, ReactNode, useContext, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 export interface SavedMovie {
   movie_id: string;
@@ -14,11 +21,14 @@ interface SavedMoviesContextType {
   removeMovie: (movieId: string) => void;
   isMovieSaved: (movieId: string) => boolean;
   toggleMovie: (movie: Omit<SavedMovie, "savedAt">) => void;
+  isLoading: boolean;
 }
 
 const SavedMoviesContext = createContext<SavedMoviesContextType | undefined>(
   undefined
 );
+
+const STORAGE_KEY = "@saved_movies";
 
 interface SavedMoviesProviderProps {
   children: ReactNode;
@@ -28,6 +38,40 @@ export const SavedMoviesProvider: React.FC<SavedMoviesProviderProps> = ({
   children,
 }) => {
   const [savedMovies, setSavedMovies] = useState<SavedMovie[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load saved movies from AsyncStorage on app start
+  useEffect(() => {
+    loadSavedMovies();
+  }, []);
+
+  const loadSavedMovies = async () => {
+    try {
+      setIsLoading(true);
+      const storedMovies = await AsyncStorage.getItem(STORAGE_KEY);
+      if (storedMovies) {
+        const parsedMovies = JSON.parse(storedMovies);
+        // Convert savedAt strings back to Date objects
+        const moviesWithDates = parsedMovies.map((movie: any) => ({
+          ...movie,
+          savedAt: new Date(movie.savedAt),
+        }));
+        setSavedMovies(moviesWithDates);
+      }
+    } catch (error) {
+      console.error("Error loading saved movies:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const saveSavedMovies = async (movies: SavedMovie[]) => {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(movies));
+    } catch (error) {
+      console.error("Error saving movies:", error);
+    }
+  };
 
   const addMovie = (movie: Omit<SavedMovie, "savedAt">) => {
     setSavedMovies((prev) => {
@@ -35,14 +79,18 @@ export const SavedMoviesProvider: React.FC<SavedMoviesProviderProps> = ({
       if (prev.some((savedMovie) => savedMovie.movie_id === movie.movie_id)) {
         return prev;
       }
-      return [...prev, { ...movie, savedAt: new Date() }];
+      const newMovies = [...prev, { ...movie, savedAt: new Date() }];
+      saveSavedMovies(newMovies); // Persist to storage
+      return newMovies;
     });
   };
 
   const removeMovie = (movieId: string) => {
-    setSavedMovies((prev) =>
-      prev.filter((movie) => movie.movie_id !== movieId)
-    );
+    setSavedMovies((prev) => {
+      const newMovies = prev.filter((movie) => movie.movie_id !== movieId);
+      saveSavedMovies(newMovies); // Persist to storage
+      return newMovies;
+    });
   };
 
   const isMovieSaved = (movieId: string) => {
@@ -63,6 +111,7 @@ export const SavedMoviesProvider: React.FC<SavedMoviesProviderProps> = ({
     removeMovie,
     isMovieSaved,
     toggleMovie,
+    isLoading,
   };
 
   return (

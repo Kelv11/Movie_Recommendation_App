@@ -3,7 +3,14 @@ import SaveButton from "@/components/SaveButton";
 import { SavedMovie, useSavedMovies } from "@/contexts/SavedMoviesContext";
 import { Link } from "expo-router";
 import React from "react";
-import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const SavedMovieCard: React.FC<{ movie: SavedMovie }> = ({ movie }) => {
   return (
@@ -46,7 +53,16 @@ const SavedMovieCard: React.FC<{ movie: SavedMovie }> = ({ movie }) => {
 };
 
 export default function SavedMoviesScreen() {
-  const { savedMovies } = useSavedMovies();
+  const { savedMovies, isLoading } = useSavedMovies();
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 bg-black justify-center items-center">
+        <ActivityIndicator size="large" color="#FF8C00" />
+        <Text className="text-white mt-4">Loading saved movies...</Text>
+      </View>
+    );
+  }
 
   if (savedMovies.length === 0) {
     return (
