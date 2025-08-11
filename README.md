@@ -1,63 +1,136 @@
 # 🎬 Movie Recommendation App
 
-A cross-platform mobile application built with **React Native** and **TypeScript** that allows users to discover trending movies, search for films, and view detailed information — all powered by a clean, scalable architecture.
+A cross-platform mobile application built with **React Native**, **TypeScript**, and **Tailwind CSS (NativeWind)** that allows users to discover trending and top-rated movies, search for titles, view detailed movie information, and save their favorites for easy access later.
 
 ---
 
-## 📌 Table of Contents
-1. [Features](#features)  
-2. [Tech Stack](#tech-stack)  
-3. [Demo](#demo)  
-4. [Getting Started](#getting-started)  
-   - [Prerequisites](#prerequisites)  
-   - [Installation](#installation)  
-   - [Running the App](#running-the-app)  
-5. [Project Structure](#project-structure)  
-6. [Configuration & API](#configuration--api)  
-7. [Roadmap](#roadmap)  
-8. [License](#license)  
-9. [Acknowledgements](#acknowledgements)
+## 📘 Project Overview
+The **Movie Recommendation App** is designed to provide a smooth, modern movie discovery experience. It integrates with the **TMDB API** to fetch real-time data, displays it in a clean UI, and allows users to personalize their watchlist by saving favorites. The app demonstrates **API integration, state management, persistent storage, and responsive UI design**.
 
 ---
 
-## ✨ Features
-- 🔍 **Search movies** by title with live results  
-- 🎥 **View trending & top-rated films**  
-- 📄 **Detailed movie pages** with synopsis, ratings, cast, and more   
+## 🚀 Features
+
+### 🎥 Movie Discovery
+- Browse **latest**, **trending**, and **top-rated** films.
+- Fetches data in real time from TMDB.
+
+### 🔍 Search
+- Search movies by title with instant, live results.
+- Debounced search for optimized API calls.
+
+### 📄 Movie Details
+- View synopsis, ratings, release date, and cast information.
+- High-quality poster images.
+
+### ⭐ Favorites Tab
+- Save movies you’re interested in.
+- Persistent storage so favorites remain after closing the app.
 
 ---
 
 ## 🛠 Tech Stack
-- **React Native** – Cross-platform development
-- **TypeScript** – Strong typing for scalability
-- **Context API** – Centralized state management
-- **Tailwind CSS (NativeWind)** – Utility-first styling for React Native
-- **REST API Integration** – Movie data fetched from [The Movie Database (TMDB)](https://www.themoviedb.org/documentation/api)
+
+**Frontend:**
+- React Native (Expo)
+- TypeScript
+- NativeWind (Tailwind CSS for React Native)
+- React Navigation
+
+**State Management:**
+- Context API
+
+**API:**
+- [TMDB API](https://developer.themoviedb.org/) for movie data
+
+**Other Tools:**
+- AsyncStorage for persistent favorites
+- ESLint + Prettier for code quality
+- dotenv for environment variable management
 
 ---
 
-## 🚀 Getting Started
+## 📂 Project Structure
+```plaintext
+Movie_Recommendation_App/
+├── .vscode/          # VSCode workspace settings
+├── app/              # App navigation and routing setup
+├── assets/           # Images, icons, and fonts
+├── components/       # Reusable UI components
+├── constants/        # App-wide constants (colors, endpoints, etc.)
+├── contexts/         # Context API for global state (favorites, etc.)
+├── interfaces/       # TypeScript interfaces for type safety
+├── services/         # API calls and data fetching logic
+├── types/            # Shared TypeScript type definitions
+├── app.json          # Expo configuration
+├── babel.config.js   # Babel setup
+├── eslint.config.js  # ESLint configuration
+├── metro.config.js   # Metro bundler settings
+├── nativewind-env.d.ts # Tailwind types for RN
+├── package.json      # Project dependencies and scripts
+├── tailwind.config.js # Tailwind CSS configuration
+└── tsconfig.json     # TypeScript configuration
+⚙️ Installation & Setup
+Prerequisites
+Node.js ≥ 16.x
 
-### Prerequisites
-Before you begin, ensure you have the following installed:
-- [Node.js](https://nodejs.org/) (≥ 16.x)
-- npm or yarn
-- [React Native CLI](https://reactnative.dev/docs/environment-setup)
-- Android Studio or Xcode for emulators
+npm or yarn
 
-You’ll also need an API key from [TMDB](https://developer.themoviedb.org/).
+Expo CLI
 
----
+TMDB API Key
 
-### Installation
-```bash
-# Clone the repository
+1️⃣ Clone the Repository
+bash
+Copy
+Edit
 git clone https://github.com/Kelv11/Movie_Recommendation_App.git
-
-# Navigate into the project folder
 cd Movie_Recommendation_App
-
-# Install dependencies
+2️⃣ Install Dependencies
+bash
+Copy
+Edit
 npm install
 # or
 yarn install
+3️⃣ Configure Environment Variables
+Create a .env file in the root directory:
+
+env
+Copy
+Edit
+EXPO_PUBLIC_MOVIE_API_KEY=your_tmdb_api_key
+4️⃣ Run the App
+bash
+Copy
+Edit
+npx expo start
+Scan the QR code with the Expo Go app on your device to run it.
+
+🧩 Customization
+API Endpoint: Change TMDB requests in services/ to point to another source.
+
+Theme: Update colors in tailwind.config.js.
+
+UI Components: Modify layouts in components/ to match your branding.
+
+✅ Best Practices Followed
+Reusable, maintainable UI components.
+
+Centralized API call logic.
+
+Strong TypeScript typing for reliability.
+
+Clean folder structure for scalability.
+
+Persistent storage for user data.
+
+🙌 Acknowledgements
+React Native Documentation
+TMDB API
+NativeWind
+
+
+TMDB API
+
+NativeWind
